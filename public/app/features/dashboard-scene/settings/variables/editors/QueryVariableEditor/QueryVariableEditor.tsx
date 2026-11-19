@@ -1,5 +1,6 @@
 import { type FormEvent } from 'react';
 import { useAsync } from 'react-use';
+import { lastValueFrom } from 'rxjs';
 
 import {
   type DataSourceInstanceSettings,
@@ -55,6 +56,7 @@ export function QueryVariableEditor({ variable, onRunQuery }: QueryVariableEdito
 
   const onRegExChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
     variable.setState({ regex: event.currentTarget.value });
+    onRunQuery();
   };
   const onRegexApplyToChange = (event: VariableRegexApplyTo) => {
     variable.setState({ regexApplyTo: event });
@@ -188,6 +190,8 @@ export function Editor({ variable, hideRefresh, hideStaticOptions, hidePreview }
   };
   const onRegExChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
     variable.setState({ regex: event.currentTarget.value });
+    // The regex only affects the computed options, so re-run the query for the preview to update.
+    lastValueFrom(variable.validateAndUpdate!());
   };
   const onRegexApplyToChange = (event: VariableRegexApplyTo) => {
     variable.setState({ regexApplyTo: event });
